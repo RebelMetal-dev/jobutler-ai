@@ -36,16 +36,31 @@ public class JobScraperService {
             for (int i = 0; i < count; i++) {
                 try {
                     Locator row = jobRows.nth(i);
-                    String fullText = row.innerText().trim();
 
-                    // .first() — HN rows contain two anchors in td.title:
-                    // 1) the actual job link, 2) a "from?site=..." domain reference.
-                    // Playwright strict mode throws if a locator resolves to >1 element,
-                    // so we explicitly take the first anchor (always the job link).
-                    String link = row.locator("td.title a").first().getAttribute("href");
-                    if (link == null || link.isBlank()) {
-                        log.warn("No link found for row {}, skipping", i);
+                    // Anchor-Element einmal holen und für Text + URL wiederverwenden.
+                    // .first() schützt vor dem Strict-Mode-Fehler (zwei Anchors pro Zeile).
+                    Locator titleAnchor = row.locator("td.title a").first();
+                    String rawTitle = titleAnchor.innerText().trim();
+                    String link = titleAnchor.getAttribute("href");
+
+                    if (link == null || link.isBlank() || rawTitle == null || rawTitle.isBlank()) {
+                        log.warn("Incomplete data for row {}, skipping", i);
                         continue;
+                    }
+
+                    // Zeilennummern entfernen (z.B. "1. " am Anfang) — Sicherheitsnetz,
+                    // falls HN die Nummer doch in den Anchor-Text einbettet.
+                    String cleanTitle = rawTitle.replaceFirst("^\\d+\\.\\s+", "");
+
+                    // Firmennamen aus dem HN-Titelformat extrahieren.
+                    // Typisches Muster: "Firmenname (YC Batch) Is Hiring ..."
+                    // → Alles vor der ersten Klammer ist der Firmenname.
+                    String company = "Hacker News Post"; // Fallback
+                    if (cleanTitle.contains("(")) {
+                        company = cleanTitle.substring(0, cleanTitle.indexOf("(")).trim();
+                    } else if (cleanTitle.toLowerCase().contains(" is hiring")) {
+                        int idx = cleanTitle.toLowerCase().indexOf(" is hiring");
+                        company = cleanTitle.substring(0, idx).trim();
                     }
 
                     String sourceUrl = link.startsWith("http")
@@ -53,8 +68,8 @@ public class JobScraperService {
                             : "https://news.ycombinator.com/" + link;
 
                     JobPost job = new JobPost();
-                    job.setTitle(fullText);
-                    job.setCompany("Hacker News Jobs");
+                    job.setTitle(cleanTitle);
+                    job.setCompany(company);
                     job.setSourceUrl(sourceUrl);
                     // status defaults to ApplicationStatus.NEW in the entity
 
