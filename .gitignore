@@ -33,6 +33,7 @@ build/
 .vscode/
 
 # Custom JoButler-AI ignores
+LEARNING_LOG.md
 *.env
 application-local.yml
 application-local.properties
