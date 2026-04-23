@@ -1,63 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.5</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <!-- TODO for Gemini: Current pom has 4.0.5 but CLAUDE.md specifies 3.x.
+             Recommend locking to latest stable 3.x (e.g. 3.4.5) for proven ecosystem
+             compatibility, unless the team consciously upgrades to Spring Boot 4. -->
+        <version>3.4.5</version>
+        <relativePath/>
     </parent>
+
     <groupId>de.rebelmetal</groupId>
     <artifactId>jobutler-ai</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>jobutler-ai</name>
-    <description>jobutler-ai</description>
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
+    <description>Intelligent Job-Scraper with AI-based analysis</description>
+
+    <!-- ================================================================
+         PROPERTIES — Single Source of Truth for all versions.
+         If a library needs upgrading, change it HERE, not in 5 places.
+         ================================================================ -->
     <properties>
         <java.version>21</java.version>
+        <!-- Playwright: Check https://mvnrepository.com/artifact/com.microsoft.playwright/playwright
+             for the latest stable release before finalizing. -->
+        <playwright.version>1.44.0</playwright.version>
     </properties>
+
+    <!-- ================================================================
+         DEPENDENCIES
+         ================================================================ -->
     <dependencies>
+
+        <!-- ── WEB LAYER ──────────────────────────────────────────────
+             spring-boot-starter-web bundles:
+             - Spring MVC (DispatcherServlet)
+             - Jackson (JSON serialization)
+             - Tomcat (embedded server)
+             Scope: compile (default) — we annotate controllers directly.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- ── PERSISTENCE LAYER ──────────────────────────────────────
+             spring-boot-starter-data-jpa bundles:
+             - Spring Data JPA
+             - Hibernate ORM (the JPA implementation)
+             - Spring JDBC
+             Scope: compile — we use @Entity, @Repository, JpaRepository directly.
+        -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+
+        <!-- PostgreSQL JDBC Driver
+             Scope: RUNTIME — our code NEVER imports org.postgresql.Driver directly.
+             We program against the JPA abstraction. Spring injects the driver at
+             startup. Using 'runtime' enforces this architectural boundary at
+             compile time: if someone accidentally imports a pg-specific class,
+             the build will FAIL. Clean architecture by design.
+        -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webmvc</artifactId>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
+        <!-- ── SCRAPING ENGINE ────────────────────────────────────────
+             Playwright for Java — controls a real Chromium browser.
+             No version tag needed here because we defined it in <properties>.
+             Scope: compile — we use Playwright API directly in scraper services.
+        -->
+        <dependency>
+            <groupId>com.microsoft.playwright</groupId>
+            <artifactId>playwright</artifactId>
+            <version>${playwright.version}</version>
+        </dependency>
+
+        <!-- ── DEVELOPER TOOLING ──────────────────────────────────────
+             Lombok generates boilerplate (getters, setters, constructors)
+             at compile time via annotation processing.
+             optional=true: Lombok is a compile-time tool only.
+             It is NOT packaged into the final JAR and NOT passed to
+             downstream projects. The spring-boot-maven-plugin exclude
+             block below reinforces this.
+        -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <!-- ── TESTING ────────────────────────────────────────────────
+             spring-boot-starter-test bundles JUnit 5, Mockito,
+             AssertJ, Spring Test (MockMvc) — everything we need.
+             Scope: test — invisible to production code.
+        -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa-test</artifactId>
+            <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webmvc-test</artifactId>
-            <scope>test</scope>
-        </dependency>
+
     </dependencies>
 
+    <!-- ================================================================
+         BUILD PLUGINS
+         ================================================================ -->
     <build>
         <plugins>
+
+            <!-- Packages the app as an executable JAR (fat JAR).
+                 Lombok is excluded from the final artifact — it did its job
+                 at compile time and has no role at runtime. -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -70,42 +133,22 @@
                     </excludes>
                 </configuration>
             </plugin>
+
+            <!-- Wires Lombok into the Java compiler as an annotation processor.
+                 Without this, @Getter/@Setter etc. are silently ignored. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <configuration>
-                            <annotationProcessorPaths>
-                                <path>
-                                    <groupId>org.projectlombok</groupId>
-                                    <artifactId>lombok</artifactId>
-                                </path>
-                            </annotationProcessorPaths>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>default-testCompile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                        <configuration>
-                            <annotationProcessorPaths>
-                                <path>
-                                    <groupId>org.projectlombok</groupId>
-                                    <artifactId>lombok</artifactId>
-                                </path>
-                            </annotationProcessorPaths>
-                        </configuration>
-                    </execution>
-                </executions>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
             </plugin>
+
         </plugins>
     </build>
 
