@@ -85,6 +85,17 @@
             <version>${playwright.version}</version>
         </dependency>
 
+        <!-- ── VIEW LAYER ────────────────────────────────────────────
+             Thymeleaf: Template-Engine für das Cockpit-Dashboard.
+             Verarbeitet HTML-Dateien unter src/main/resources/templates/
+             und befüllt sie mit Daten aus dem Controller (th:text, th:each).
+             Scope: compile — Spring MVC bindet Thymeleaf direkt ein.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
         <!-- ── DEVELOPER TOOLING ──────────────────────────────────────
              Lombok generates boilerplate (getters, setters, constructors)
              at compile time via annotation processing.
