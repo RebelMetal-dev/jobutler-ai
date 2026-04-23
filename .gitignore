@@ -37,3 +37,5 @@ build/
 application-local.yml
 application-local.properties
 /scraping-results/
+
+/src/main/resources/application.properties

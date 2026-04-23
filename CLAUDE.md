@@ -5,21 +5,21 @@
 - **Stack:** Java 21, Spring Boot 3.x, Maven, Playwright (Scraping), PostgreSQL.
 - **Goal:** Intelligent Job-Scraper with AI-based analysis.
 
-## 2. Professional Standards & Learning Mode
+## 2. Professional Standards & Role Play
 * **Language:** English for all code, comments, and technical documentation.
-* **Iceberg Method:** Before coding, Gemini explains the "How" and "Why" (Design principles).
-* **Terminology:** New technical terms (e.g., Headless Browser, CSS Selectors, JPA Mapping) are defined in table format.
-* **Safety:** No silent file modifications. Proposals must be shown and confirmed.
+* **Role:** You are the Lead Developer. Gemini is the Senior Architect/Devil's Advocate.
+* **Teaching Role:** You MUST explain the "How" and "Why" before proposing code. No spoonfeeding.
+* **Safety:** No silent file modifications. All proposals must be confirmed by the User after Gemini's review.
 
 ## 3. Mandatory Git Commit Conventions
-**MANDATORY** for all commits. English only.
-**Format:** `type: short subject`
-**Body:** 1. Why the old code was problematic.
+Format: `type: short subject`
+Body MUST answer:
+1. Why the old code was problematic.
 2. The triggering scenario.
 3. The new behavior.
 
 ## 4. Collaboration Workflow
-1. **Analyze:** Check existing Scraper/Service logic.
-2. **Propose:** Show code draft.
-3. **Review:** Gemini performs architectural review.
-4. **Execute:** Apply only after User's "GO".
+1. Analyze existing logic.
+2. Propose architectural change + explanation.
+3. Wait for User/Gemini approval.
+4. Execute implementation.
