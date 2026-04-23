@@ -30,7 +30,28 @@
         <!-- Playwright: Check https://mvnrepository.com/artifact/com.microsoft.playwright/playwright
              for the latest stable release before finalizing. -->
         <playwright.version>1.44.0</playwright.version>
+        <!-- Spring AI: Version managed centrally here, applied via BOM below. -->
+        <spring-ai.version>1.0.0</spring-ai.version>
     </properties>
+
+    <!-- ================================================================
+         DEPENDENCY MANAGEMENT — BOM imports
+         A BOM (Bill of Materials) is a special POM that defines compatible
+         versions for a set of libraries. By importing spring-ai-bom here,
+         we don't need to specify versions on individual Spring AI dependencies
+         — Maven resolves them automatically and consistently.
+         ================================================================ -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>${spring-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <!-- ================================================================
          DEPENDENCIES
@@ -83,6 +104,18 @@
             <groupId>com.microsoft.playwright</groupId>
             <artifactId>playwright</artifactId>
             <version>${playwright.version}</version>
+        </dependency>
+
+        <!-- ── AI LAYER ──────────────────────────────────────────────
+             Spring AI Ollama Starter: connects Spring Boot to a local
+             Ollama instance (http://localhost:11434). Provides ChatClient
+             auto-configuration — no manual HTTP wiring needed.
+             Version managed by spring-ai-bom above.
+        -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-model-ollama</artifactId>
+            <version>${spring-ai.version}</version>
         </dependency>
 
         <!-- ── VIEW LAYER ────────────────────────────────────────────
