@@ -58,6 +58,13 @@ public class JobScraperService {
                     String company = "Hacker News Post"; // Fallback
                     if (cleanTitle.contains("(")) {
                         company = cleanTitle.substring(0, cleanTitle.indexOf("(")).trim();
+                        // Sonderfall: "Zep AI Is Hiring – Beschreibung (YC Batch)"
+                        // Die Klammer steht am Ende, nicht direkt nach dem Firmennamen.
+                        // Sekundär-Check: enthält der extrahierte Name noch " is hiring"?
+                        // Falls ja, dort nochmal abschneiden → "Zep AI"
+                        if (company.toLowerCase().contains(" is hiring")) {
+                            company = company.substring(0, company.toLowerCase().indexOf(" is hiring")).trim();
+                        }
                     } else if (cleanTitle.toLowerCase().contains(" is hiring")) {
                         int idx = cleanTitle.toLowerCase().indexOf(" is hiring");
                         company = cleanTitle.substring(0, idx).trim();
