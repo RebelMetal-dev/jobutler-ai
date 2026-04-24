@@ -49,13 +49,12 @@ Body MUST answer:
 - Startup-Recovery: resetStuckJobs() setzt ANALYZING → NEW bei App-Start
 - Dashboard zeigt: animierte Status-Badges, Tech-Stack-Tags, Remote-Indikator, Butler-Check
 
-### Letzter Commit-Stand
+### Letzter Commit-Stand (alle gepusht ✅)
 ```
+feat: upgrade Cockpit UI with Butler button and live status badges
+feat: implement Phase 5 AI analysis via local Ollama/Llama3
 build: add Spring AI 1.0.0 Ollama starter for local LLM integration
 ```
-Noch ausstehend (nach diesem Update zu committen):
-- `feat: implement Phase 5 AI analysis via local Ollama/Llama3`
-- `feat: upgrade Cockpit UI with Butler button and live status badges`
 
 ### Bekannte technische Entscheidungen / Gotchas
 - PostgreSQL CHECK constraint `job_posts_status_check` manuell gedroppt (DBeaver), da Hibernate keine ALTER-Constraints macht
