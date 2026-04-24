@@ -77,8 +77,27 @@ public class JobPost {
     private Integer minSalary;
 
     // ── AI Features ───────────────────────────────────────────────────────
-    // Both fields are nullable by design: populated only after the AI pipeline
+    // All fields nullable by design: populated only after the AI pipeline
     // has run. NULL means "not yet analysed" — a valid, expected state.
+
+    // Comma-separated tech keywords extracted by the AI.
+    // e.g. "Java, Spring Boot, Kubernetes"
+    // String (not enum) — LLM output is unpredictable.
+    @Column(name = "tech_stack")
+    private String techStack;
+
+    // Seniority level extracted by the AI.
+    // e.g. "Junior", "Senior", "Staff", "Founding Engineer"
+    // String (not enum) — LLM may return creative values like "Staff Engineer".
+    @Column(name = "seniority")
+    private String seniority;
+
+    // Remote-availability as extracted by the AI.
+    // Boolean (wrapper, not primitive) — null = AI could not determine this.
+    // primitive boolean would default to false, implying "not remote" when unknown.
+    @Column(name = "remote")
+    private Boolean remote;
+
     @Column(name = "ai_rating")
     private Integer aiRating;
 

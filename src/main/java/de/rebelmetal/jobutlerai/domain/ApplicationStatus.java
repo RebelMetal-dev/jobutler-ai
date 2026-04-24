@@ -13,8 +13,14 @@ public enum ApplicationStatus {
     /** Freshly scraped, not yet reviewed by the user or AI. */
     NEW,
 
-    /** AI pipeline has processed the posting (rating + summary generated). */
-    AI_REVIEWED,
+    /** AI pipeline is currently processing this posting. */
+    ANALYZING,
+
+    /** AI pipeline has processed the posting (techStack, seniority, remote, summary filled). */
+    ANALYZED,
+
+    /** AI pipeline failed for this posting (Ollama error, malformed response, timeout). */
+    ANALYSIS_FAILED,
 
     /** User has manually reviewed the AI output. */
     USER_REVIEWED,
